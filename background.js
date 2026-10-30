@@ -1,28 +1,70 @@
-var timeOpen;
-var limitedSite = "youtube.com";
+import { limitedSites, timeLimit, settingsSet } from "./popup.js";
+var timeOpen = 0;
+var timer;
 var tab;
-var ran = false;
+var tabIndex;
+var closingTabs = false;
 
-async function findTabs() {
-    console.log("finding 1");
-    tab = await browser.tabs.query({});
+browser.action.onClicked.addListener(() => {
+    console.log("extension clicked");
+    settingsOpen = true;
+    console.log(settingsOpen);
+    browser.tabs.create({
+        url: browser.runtime.getURL("popup.html")
+    });
+});
+
+if (settingsSet) {
+    scanTabsContinuous();
+}
+
+async function getTabs() {
+    tab = await browser.tabs.query({}); // Gets info on tabs open
     console.log("tabs: ", tab);
-    for (let i = 0; i < tab.length; i++) {
-        if (tab[i].url.includes(limitedSite)) {
-            browser.tabs.remove(tab[i].id);
-            console.log("tab index " + i + " closed");
-        } else {
+    for (var i = 0; i < tab.length; i++) { // Check through each index of the array
+        if (tab[i].url.includes(limitedSites)) { // If the url includes the limited site, then close it, otherwise keep it
+            closingTabs = true;
+            tabIndex = i;
+            checkAvailable();
+        }
+        else {
             console.log("tab index " + i + " kept");
         }
     }
 }
 
-findTabs();
+function checkAvailable() {
+    timer = setInterval(() => {
+        browser.tabs.query({}).then((tab) => {
+            console.log("tabs: ", tab)
+            if (tab[tabIndex].url.includes(limitedSites)) {
+                console.log("Tab is still open");
+                timeOpen++;
+                closeTab();
+            } else {
+                console.log("Tab has been closed through other means");
+                clearInterval(timer);
+                timer = null;
+                closingTabs = false;
+            }
+        });
+    }, 1000);
+}
 
+function closeTab() {
+    if (timeOpen >= timeLimit) {
+        browser.tabs.remove(tab[tabIndex].id);
+        console.log("tab index " + tabIndex + " closed");
+        clearInterval(timer);
+        timer = null;
+        closingTabs = false;
+    }
+}
 
-// if (browser.tabs.query.url == limitedSite) {
-//     setInterval(() => {
-//         timeOpen = performance.now();
-//         console.log(timeOpen);
-//     }, 1000);
-// }
+function scanTabsContinuous() {
+    setInterval(() => {
+        if (!closingTabs) {
+            getTabs();
+        }
+    }, 1000);
+}

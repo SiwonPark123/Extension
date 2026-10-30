@@ -1,0 +1,52 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+table {
+    height: 100vh;
+    width: 100vw;
+    border-collapse: collapse;
+    border-spacing: 0px;
+}
+
+th {
+    font-size: 35px;
+}
+
+td {
+    font-size: 25px;
+}
+
+th,
+td {
+    width: 50vw;
+    height: 20vh;
+    text-align: center;
+}
+
+textarea {
+    font-size: 15px;
+    resize: none;
+    height: 80%;
+    width: 35%;
+}
+
+input {
+    height: 20%;
+}
+
+button {
+    font-size: 20px;
+    width: 25%;
+    height: 50%;
+}
+
+.leftSide {
+    text-align: right;
+
+}
+
+.rightSide {
+    text-align: left;
+}

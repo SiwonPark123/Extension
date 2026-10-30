@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="popup.css">
+    <script type="module" src="popup.js"></script>
+    <title>Settings</title>
+</head>
+
+<body>
+    <table>
+        <tr>
+            <th colspan="2">Extension Settings</th>
+        </tr>
+        <tr>
+            <td colspan="2">Websites to Limit</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <textarea placeholder="Type URLs of websites to block" id="siteInput"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td class="leftSide">Time Limit (minutes): </td>
+            <td class="rightSide">
+                <input type="text" id="timeLimit">
+            </td>
+        </tr>
+        <tr>
+            <td class="leftSide">
+                <button id="save">Save</button>
+            </td>
+            <td class="rightSide">
+                <button id="close">Close</button>
+            </td>
+        </tr>
+
+    </table>
+</body>
+
+</html>
