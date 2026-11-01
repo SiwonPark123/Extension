@@ -1,18 +1,19 @@
-export var limitedSites = "";
-export var timeLimit = 0;
-export var settingsSet = false;
+var limitedSites = "";
+var timeLimit = 0;
+var settingsSet = false;
 
-function saveSettings() {
-    limitedSites = document.getElementById('siteInput').value;
-    console.log(limitedSites);
-    timeLimit = document.getElementById('timeLimit').value * 60;
-    console.log(timeLimit);
-    settingsSet = true;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('save').addEventListener("click", saveSettings);
-    document.getElementById('close').addEventListener("click", () => {
-        window.close();
+document.getElementById('save').addEventListener("click", async () => {
+    await browser.storage.local.set({
+        limitedSites: document.getElementById('siteInput').value,
+        timeLimit: document.getElementById('timeLimit').value * 60,
+        settingsSet: true
     });
-});
+    var setData = await browser.storage.local.get([
+        "limitedSites",
+        "timeLimit",
+        "settingsSet"
+    ]);
+    console.log(setData.limitedSites);
+    console.log(setData.timeLimit);
+    console.log(setData.settingsSet);
+})
