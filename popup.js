@@ -17,3 +17,7 @@ document.getElementById('save').addEventListener("click", async () => {
     console.log(setData.timeLimit);
     console.log(setData.settingsSet);
 })
+
+document.getElementById('close').addEventListener("click", () => {
+    window.close();
+})

@@ -15,9 +15,11 @@ browser.action.onClicked.addListener(() => {
     });
 });
 
-if (settingData.settingsSet) {
-    scanTabsContinuous();
+while (!settingData.settingSet) {
+    break;
 }
+
+scanTabsContinuous();
 
 async function getTabs() {
     tab = await browser.tabs.query({}); // Gets info on tabs open
@@ -62,6 +64,7 @@ function scanTabsContinuous() {
     setInterval(() => {
         if (!closingTabs) {
             getTabs();
+            console.log(timeOpen);
         }
     }, 1000);
 }
