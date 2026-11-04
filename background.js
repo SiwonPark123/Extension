@@ -1,5 +1,7 @@
 var timeOpen = 0;
 var timer;
+var checkSettingsAvailable;
+var scanTimer;
 var tab;
 var tabIndex;
 var closingTabs = false;
@@ -15,11 +17,12 @@ browser.action.onClicked.addListener(() => {
     });
 });
 
-while (!settingData.settingSet) {
-    break;
-}
-
-scanTabsContinuous();
+checkSettingsAvailable = setInterval(() => {
+    if (settingData.settingsSet) {
+        scanTabsContinuous();
+        clearInterval(checkSettingsAvailable);
+    }
+}, 100);
 
 async function getTabs() {
     tab = await browser.tabs.query({}); // Gets info on tabs open
@@ -38,7 +41,7 @@ function checkAvailable() {
         browser.tabs.query({}).then((tab) => {
             if (tab[tabIndex].url.includes(settingData.limitedSites)) {
                 console.log("Tab is still open");
-                timeOpen++;
+                timeOpen += 0.5;
                 closeTab();
             } else {
                 console.log("Tab has been closed through other means");
@@ -47,7 +50,7 @@ function checkAvailable() {
                 closingTabs = false;
             }
         });
-    }, 1000);
+    }, 500);
 }
 
 function closeTab() {
@@ -61,10 +64,13 @@ function closeTab() {
 }
 
 function scanTabsContinuous() {
-    setInterval(() => {
+    scanTimer = setInterval(() => {
+        if (!settingData.settingsSet) {
+            // Last worked here on repeating code if settings get reset
+            clearInterval(scanTimer);
+        }
         if (!closingTabs) {
             getTabs();
-            console.log(timeOpen);
         }
     }, 1000);
 }
