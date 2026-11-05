@@ -16,15 +16,6 @@ document.getElementById('save').addEventListener("click", async () => {
             settingsSet: true
         });
     }
-
-    var setData = await browser.storage.local.get([
-        "limitedSites",
-        "timeLimit",
-        "settingsSet"
-    ]);
-    console.log(setData.limitedSites);
-    console.log(setData.timeLimit);
-    console.log(setData.settingsSet);
 });
 
 document.getElementById('reset').addEventListener("click", async () => {

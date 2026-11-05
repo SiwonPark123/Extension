@@ -12,9 +12,29 @@ var settingData = await browser.storage.local.get([
 ]);
 
 browser.action.onClicked.addListener(() => {
+    console.log("settings opened");
     browser.tabs.create({
         url: browser.runtime.getURL("popup.html")
     });
+});
+
+browser.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName == "local") {
+        if (changes.limitedSites) {
+            settingData.limitedSites = changes.limitedSites.newValue;
+            console.log(settingData.limitedSites);
+        }
+
+        if (changes.timeLimit) {
+            settingData.timeLimit = changes.timeLimit.newValue;
+            console.log(settingData.timeLimit);
+        }
+
+        if (changes.settingsSet) {
+            settingData.settingsSet = changes.settingsSet.newValue;
+            console.log(settingData.settingsSet);
+        }
+    }
 });
 
 checkSettingsAvailable = setInterval(() => {
@@ -25,10 +45,10 @@ checkSettingsAvailable = setInterval(() => {
 }, 100);
 
 async function getTabs() {
-    tab = await browser.tabs.query({}); // Gets info on tabs open
+    tab = await browser.tabs.query({});
     console.log("scanning tabs");
-    for (var i = 0; i < tab.length; i++) { // Check through each index of the array
-        if (tab[i].url.includes(settingData.limitedSites)) { // If the url includes the limited site, then close it, otherwise keep it
+    for (var i = 0; i < tab.length; i++) {
+        if (tab[i].url.includes(settingData.limitedSites)) {
             closingTabs = true;
             tabIndex = i;
             checkAvailable();
