@@ -33,16 +33,14 @@ browser.storage.onChanged.addListener((changes, areaName) => {
         if (changes.settingsSet) {
             settingData.settingsSet = changes.settingsSet.newValue;
             console.log(settingData.settingsSet);
+            if (changes.settingsSet.newValue) {
+                scanTabsContinuous();
+            } else {
+                clearInterval(scanTimer);
+            }
         }
     }
 });
-
-checkSettingsAvailable = setInterval(() => {
-    if (settingData.settingsSet) {
-        scanTabsContinuous();
-        clearInterval(checkSettingsAvailable);
-    }
-}, 100);
 
 async function getTabs() {
     tab = await browser.tabs.query({});
@@ -85,10 +83,6 @@ function closeTab() {
 
 function scanTabsContinuous() {
     scanTimer = setInterval(() => {
-        if (!settingData.settingsSet) {
-            // Last worked here on repeating code if settings get reset
-            clearInterval(scanTimer);
-        }
         if (!closingTabs) {
             getTabs();
         }
