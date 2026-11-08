@@ -4,12 +4,15 @@ var checkSettingsAvailable;
 var scanTimer;
 var tab;
 var tabIndex;
+var limitedSitesIndex;
 var closingTabs = false;
 var settingData = await browser.storage.local.get([
     "limitedSites",
     "timeLimit",
     "settingsSet"
 ]);
+
+// Last time working on implementing specific time limits for each site, got stuck at time open for each site
 
 browser.action.onClicked.addListener(() => {
     console.log("settings opened");
@@ -45,11 +48,14 @@ browser.storage.onChanged.addListener((changes, areaName) => {
 async function getTabs() {
     tab = await browser.tabs.query({});
     console.log("scanning tabs");
-    for (var i = 0; i < tab.length; i++) {
-        if (tab[i].url.includes(settingData.limitedSites)) {
-            closingTabs = true;
-            tabIndex = i;
-            checkAvailable();
+    for (let i = 0; i < tab.length; i++) {
+        for (let j = 0; j < settingData.limitedSites.length; j++) {
+            if (tab[i].url.includes(settingData.limitedSites[j])) {
+                closingTabs = true;
+                tabIndex = i;
+                limitedSitesIndex = j;
+                checkAvailable();
+            }
         }
     }
 }
@@ -57,9 +63,9 @@ async function getTabs() {
 function checkAvailable() {
     timer = setInterval(() => {
         browser.tabs.query({}).then((tab) => {
-            if (tab[tabIndex].url.includes(settingData.limitedSites)) {
+            if (tab[tabIndex].url.includes(settingData.limitedSites[limitedSitesIndex])) {
                 console.log("Tab is still open");
-                timeOpen += 0.5;
+                timeOpen += 1;
                 closeTab();
             } else {
                 console.log("Tab has been closed through other means");
@@ -68,7 +74,7 @@ function checkAvailable() {
                 closingTabs = false;
             }
         });
-    }, 500);
+    }, 1000);
 }
 
 function closeTab() {
