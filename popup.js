@@ -11,10 +11,11 @@ document.getElementById('save').addEventListener("click", async () => {
         });
         console.log("Please input sites");
     } else {
+        limitedSites = document.getElementById('siteInput').value.split("\n");
         timeLimit = document.getElementById('timeLimit').value.split(",")
         await browser.storage.local.set({
-            limitedSites: document.getElementById('siteInput').value.split("\n"),
-            timeLimit: timeLimit.map(minutes => minutes * 60),
+            limitedSites: limitedSites.filter(Boolean),
+            timeLimit: timeLimit.map(minutes => Math.round(minutes * 6000) / 100),
             settingsSet: true
         });
     }
